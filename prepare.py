@@ -54,9 +54,7 @@ def get_config_value(name, kwargs=None, default=None):
 
 task_name = os.path.basename(os.path.abspath('.'))
 
-home_dir = get_config_value('HOME_DIR', default='/home/lioadmin/.prep/')
-home_join = lambda *path: os.path.join(home_dir, *path)
-test_dir = get_config_value('TEST_DIR', {'taskname':task_name})
+test_dir = get_config_value('TEST_DIR')
 
 
 def get_test_case_defs():
@@ -157,13 +155,13 @@ def copy_task():
     if languages:
         found = []
         for lang in languages:
-            src = get_config_value('TASK_DESCRIPTION', {'taskname':task_name, 'language':lang})
+            src = get_config_value('TASK_DESCRIPTION', {'language': lang})
             if os.path.isfile(src):
                 copy(src, 'statement/statement-{}.pdf'.format(lang))
                 found.append(lang)
         return found
     else:
-        src = get_config_value('TASK_DESCRIPTION', {'taskname':task_name})
+        src = get_config_value('TASK_DESCRIPTION', {'language': ''})
         copy(src, 'statement/statement.pdf')
 
 
@@ -176,11 +174,9 @@ def write_scores():
 
 
 def copy_api():
-    api_dir = get_config_value('API_DIR', {'taskname': task_name})
-    api_private = get_config_value('API_DIR_PRIVATE', {'taskname': task_name},
-            default=os.path.join(api_dir, 'private'))
-    api_public = get_config_value('API_DIR_PUBLIC', {'taskname': task_name},
-            default=os.path.join(api_dir, 'public'))
+    api_dir = get_config_value('API_DIR')
+    api_private = get_config_value('API_DIR_PRIVATE', default=os.path.join(api_dir, 'private'))
+    api_public = get_config_value('API_DIR_PUBLIC', default=os.path.join(api_dir, 'public'))
     os.system('rm -r sol/* att/*')
     if os.path.isdir(api_private):
         for fn in os.listdir(api_private):
@@ -195,13 +191,13 @@ statement_languages = None
 def write_yaml():
     data = OrderedDict()
     data['name'] = task_name
-    data['title'] = get_config_value('TITLE', default=task_name)
+    data['title'] = get_config_value('TITLE') or task_name.capitalize()
     data['n_input'] = len(cases)
     data['public_testcases'] = ','.join(str(c.index) for c in cases if c.public)
     data['time_limit'] = get_config_value('TIME_LIMIT')
     data['memory_limit'] = get_config_value('MEMORY_LIMIT')
-    data['infile'] = get_config_value('INPUT_FILE', {'taskname': task_name}, default='')
-    data['outfile'] = get_config_value('OUTPUT_FILE', {'taskname': task_name}, default='')
+    data['infile'] = get_config_value('INPUT_FILE', default='')
+    data['outfile'] = get_config_value('OUTPUT_FILE', default='')
     if statement_languages is not None:
         data['statement_languages'] = statement_languages
     data['primary_language'] = get_config_value('PRIMARY_STATEMENT', default='en')
@@ -228,7 +224,7 @@ def run():
 run()
 
 for cmd_f in get_config_value('RUN_COMMANDS', default=[]):
-    cmd = get_value(cmd_f, {'taskname':task_name})
+    cmd = get_value(cmd_f)
     print 'run', cmd
     os.system(cmd)
 
