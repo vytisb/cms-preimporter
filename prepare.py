@@ -100,6 +100,7 @@ def collect_tests():
             if ret is not None:
                 case, public, groups = ret
                 test_cases.append((case, groups, TestCase(ipath, opath, public)))
+    assert len(test_cases) > 0
     test_cases.sort()
     tests = []
     for i, (case, grps, test) in enumerate(test_cases):
@@ -108,9 +109,11 @@ def collect_tests():
         for group in grps:
             g = gstore[group]
             g.cases.append(i)
-    print gstore.keys()
+    gkeys = gstore.keys()
+    gkeys.sort()
+    print gkeys
     groups = []
-    for group in sorted(gstore.keys()):
+    for group in gkeys:
         g = gstore[group]
         g.cases.sort()
         groups.append(g)
