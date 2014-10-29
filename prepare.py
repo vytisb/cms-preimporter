@@ -125,7 +125,7 @@ def get_test_cases():
     total_points = get_config_value('TOTAL_POINTS')
     points = get_config_value('POINTS',
                     {'total':total_points, 'n':len(groups)})
-    thresholds = get_config_value('THRESHOLDS')
+    thresholds = get_config_value('THRESHOLDS', {'n':len(groups)})
     assert len(points) == len(groups)
     if total_points is not None:
         assert sum(points) == total_points
