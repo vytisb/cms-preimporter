@@ -35,7 +35,7 @@ MEMORY_LIMIT = 64
 INPUT_FILE = ''
 
 # output filename, empty for stdout
-OUTFILE_FILE = ''
+OUTPUT_FILE = ''
 
 PROPERTIES = {
     'token_mode': 'infinite',
