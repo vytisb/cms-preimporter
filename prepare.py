@@ -4,6 +4,7 @@
 import sys, os, re, shutil, yaml
 from collections import defaultdict, OrderedDict
 from zipfile import ZipFile
+import tarfile
 
 assert __name__ == '__main__'
 
@@ -18,8 +19,18 @@ def copy(src, dst):
     print 'copy', src, '->', dst
     shutil.copyfile(src, dst)
 
-def create_zip(dir, zipfile):
-    with ZipFile(zipfile, 'w') as z:
+def create_arc(dir, arcfile, type='tgz'):
+    if type == 'tgz':
+        f = tarfile.open(arcfile, 'w:gz')
+        def add(f, path, rpath):
+            f.add(path, rpath)
+    elif type == 'zip':
+        f = ZipFile(arcfile, 'w')
+        def add(f, path, rpath):
+            f.write(path, rpath)
+    else:
+        return
+    with f:
         for root, dirs, files in os.walk(dir):
             i = 0
             while i < len(dirs):
@@ -32,8 +43,8 @@ def create_zip(dir, zipfile):
                     continue
                 path = os.path.join(root, fn)
                 rpath = os.path.relpath(path, dir)
-                print 'zip', path, '->', '{}:{}'.format(zipfile, rpath)
-                z.write(path, rpath)
+                print type, path, '->', '{}:{}'.format(arcfile, rpath)
+                add(f, path, rpath)
 
 def mkdir(dir):
     if not os.path.exists(dir):
@@ -187,7 +198,7 @@ def copy_api():
                 continue
             copy(os.path.join(api_private, fn), os.path.join('sol', fn))
     if os.path.isdir(api_public):
-        create_zip(api_public, 'att/{}.zip'.format(task_name))
+        create_arc(api_public, 'att/{}.tgz'.format(task_name), type='tgz')
 
 statement_languages = None
 
