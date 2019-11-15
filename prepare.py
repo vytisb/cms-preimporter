@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
+from __future__ import unicode_literals, print_function, division
 
 import sys, os, re, shutil, yaml
 from collections import defaultdict, OrderedDict
@@ -16,7 +17,7 @@ if os.getcwd() not in sys.path:
 import config
 
 def copy(src, dst):
-    print 'copy', src, '->', dst
+    print('copy', src, '->', dst)
     shutil.copyfile(src, dst)
 
 def create_arc(dir, arcfile, type='tgz'):
@@ -43,7 +44,7 @@ def create_arc(dir, arcfile, type='tgz'):
                     continue
                 path = os.path.join(root, fn)
                 rpath = os.path.relpath(path, dir)
-                print type, path, '->', '{}:{}'.format(arcfile, rpath)
+                print(type, path, '->', '{}:{}'.format(arcfile, rpath))
                 add(f, path, rpath)
 
 def mkdir(dir):
@@ -120,9 +121,9 @@ def collect_tests():
         for group in grps:
             g = gstore[group]
             g.cases.append(i)
-    gkeys = gstore.keys()
+    gkeys = list(gstore.keys())
     gkeys.sort()
-    print gkeys
+    print(gkeys)
     groups = []
     for group in gkeys:
         g = gstore[group]
@@ -182,9 +183,9 @@ def copy_task():
 def write_scores():
     with open('gen/shared', 'w') as f:
         for g in groups:
-            print >> f, 'ST: {} {}'.format(g.points, g.threshold)
+            print('ST: {} {}'.format(g.points, g.threshold), file=f)
             for i in g.cases:
-                print >> f, '{}  # {}'.format(i, os.path.relpath(cases[i].inputfile, test_dir))
+                print('{}  # {}'.format(i, os.path.relpath(cases[i].inputfile, test_dir)), file=f)
 
 
 def copy_api():
@@ -215,11 +216,11 @@ def write_yaml():
     if statement_languages is not None:
         data['statement_languages'] = statement_languages
     data['primary_language'] = get_config_value('PRIMARY_STATEMENT', default='en')
-    for k, v in get_config_value('PROPERTIES', default={}).iteritems():
+    for k, v in get_config_value('PROPERTIES', default={}).items():
         data[k] = v
     with open('task.yaml', 'w') as f:
         #yaml.dump(data, f, default_flow_style=False)
-        for k, v in data.iteritems():
+        for k, v in data.items():
             yaml.dump({k: v}, f, default_flow_style=False)
 
 
@@ -239,7 +240,7 @@ run()
 
 for cmd_f in get_config_value('RUN_COMMANDS', default=[]):
     cmd = get_value(cmd_f)
-    print 'run', cmd
+    print('run', cmd)
     os.system(cmd)
 
 
