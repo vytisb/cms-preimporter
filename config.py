@@ -65,6 +65,9 @@ POINTS = divide_equal
 # [float]
 #THRESHOLDS = []
 
+# bool
+# SIMPLE_GROUPS = False
+
 
 def get_output_filename(filename):
     return os.path.splitext(filename)[0] + '.sol'

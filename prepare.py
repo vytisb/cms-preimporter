@@ -148,6 +148,15 @@ def get_test_cases():
     for g, p, t in zip(groups, points, thresholds):
         g.points = p
         g.threshold = t
+
+    if get_config_value('SIMPLE_GROUPS', default=False):
+        last_test = -1
+        for g in groups:
+            for c in g.cases:
+                assert c > last_test
+                last_test = c
+            assert g.threshold == 1.0
+
     return test_cases, groups
 
 cases, groups = get_test_cases()
@@ -181,6 +190,10 @@ def copy_task():
 
 
 def write_scores():
+    if get_config_value('SIMPLE_GROUPS', default=False):
+        if os.path.isfile('gen/shared'):
+            os.unlink('gen/shared')
+        return
     with open('gen/shared', 'w') as f:
         for g in groups:
             print('ST: {} {}'.format(g.points, g.threshold), file=f)
@@ -209,6 +222,9 @@ def write_yaml():
     data['title'] = get_config_value('TITLE') or task_name.capitalize()
     data['n_input'] = len(cases)
     data['public_testcases'] = ','.join(str(c.index) for c in cases if c.public)
+    if get_config_value('SIMPLE_GROUPS', default=False):
+        data['score_type'] = 'SimpleGroupMin'
+        data['score_type_parameters'] = [[g.points, len(g.cases)] for g in groups]
     data['time_limit'] = get_config_value('TIME_LIMIT')
     data['memory_limit'] = get_config_value('MEMORY_LIMIT')
     data['infile'] = get_config_value('INPUT_FILE', default='')
