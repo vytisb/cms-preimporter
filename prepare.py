@@ -103,6 +103,8 @@ def find_test_files(test_dir, regexp):
 
 def collect_tests():
     defs = get_test_case_defs()
+    if not defs:
+        return [], []
     gstore = defaultdict(TestGroup)
     test_cases = []
     for dirpath, regexp, parse in defs:
@@ -134,6 +136,8 @@ def collect_tests():
 
 def get_test_cases():
     test_cases, groups = collect_tests()
+    if not groups:
+        return test_cases, groups
     total_points = get_config_value('TOTAL_POINTS')
     points = get_config_value('POINTS',
                     {'total':total_points, 'n':len(groups)})
@@ -190,7 +194,7 @@ def copy_task():
 
 
 def write_scores():
-    if get_config_value('SIMPLE_GROUPS', default=False):
+    if get_config_value('SIMPLE_GROUPS', default=False) or not groups:
         if os.path.isfile('gen/shared'):
             os.unlink('gen/shared')
         return
